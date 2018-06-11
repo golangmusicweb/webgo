@@ -27,7 +27,7 @@ func (cfg *Config) LoadConfig() {
 	cfg.Redis = make(map[string]string)
 	cfg.All = make(map[string]string)
 
-	fl, err := os.Open("config/settings.conf")
+	fl, err := os.Open("webgo/config/settings.conf")
 	if err != nil {
 		fmt.Printf("Error: %s\n", err)
 		panic(err)
