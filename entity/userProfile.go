@@ -5,12 +5,13 @@ import (
 )
 
 type UserProfile struct {
-	Id int64 `xorm: "pk autoincr notnull"`
-	Username string `xorm: "varchar(40) notnull unique"`
-	Password string `xorm: "varchar(40) notnull"`
-	Email string `xorm: "varchar(40) unique notnull"`
-	Nickname string `xorm: "varchar(40)"`
-	Birthday time.Time `xorm: "date"`
-	Address string `xorm: "varchar(40)"`
-	CreatedAt time.Time `xorm: "created"`
+	Id int64 `xorm: "pk autoincr notnull" json: "id"`
+	Username string `xorm: "varchar(40) notnull unique" json: "username"`
+	Password string `xorm: "varchar(40) notnull" json: "passwd"`
+	Email string `xorm: "varchar(40) unique notnull" json: "email"`
+	Phone int64 `xorm: "bigint" json: "phone"`
+	Nickname string `xorm: "varchar(40)" json: "nickname"`
+	Birthday time.Time `xorm: "date" json: "birthday"`
+	Address string `xorm: "varchar(40)" json: "address"`
+	CreatedAt time.Time `xorm: "created" json: "created_at"`
 }

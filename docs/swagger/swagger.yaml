@@ -1,0 +1,31 @@
+basePath: /
+info:
+  contact: {}
+  description: get user info
+  license: {}
+  version: v1
+paths:
+  /api/v1/user/{id}:
+    get:
+      consumes:
+      - application/json
+      description: get user info
+      parameters:
+      - description: User id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "404":
+          description: "404"
+          schema:
+            type: string
+      summary: userprofile
+swagger: "2.0"
