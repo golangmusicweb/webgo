@@ -1,19 +1,21 @@
-basePath: /
 info:
   contact: {}
-  description: get user info
   license: {}
-  version: v1
 paths:
-  /api/v1/user/{id}:
-    get:
+  /api/v1/register:
+    post:
       consumes:
-      - application/json
-      description: get user info
+      - application/x-www-form-urlencoded
+      description: register a new user and secret password
       parameters:
-      - description: User id
-        in: path
-        name: id
+      - description: register phone code
+        in: formData
+        name: phone
+        required: true
+        type: integer
+      - description: register password
+        in: formData
+        name: password
         required: true
         type: string
       produces:
@@ -23,9 +25,5 @@ paths:
           description: ok
           schema:
             type: string
-        "404":
-          description: "404"
-          schema:
-            type: string
-      summary: userprofile
+      summary: Register a new user
 swagger: "2.0"
