@@ -6,7 +6,6 @@ import (
 
 type UserProfile struct {
 	Id int64 `xorm: "pk autoincr notnull" json: "id"`
-	Username string `xorm: "varchar(40) notnull unique" json: "username"`
 	Password string `xorm: "varchar(40) notnull" json: "passwd"`
 	Email string `xorm: "varchar(40) unique notnull" json: "email"`
 	Phone int64 `xorm: "bigint" json: "phone"`

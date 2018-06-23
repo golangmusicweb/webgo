@@ -5,11 +5,58 @@
         "license": {}
     },
     "paths": {
+        "/api/v1/login": {
+            "post": {
+                "description": "User login and get a authorization token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "User login and get a authorization token",
+                "parameters": [
+                    {
+                        "description": "User login and get a authorization token",
+                        "name": "login",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/view.UserOperation"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/view.ResponseMSG"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/view.ResponseMSG"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/view.ResponseMSG"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/register": {
             "post": {
-                "description": "register a new user and secret password",
+                "description": "register a new username and secret password",
                 "consumes": [
-                    "application/x-www-form-urlencoded"
+                    "application/json"
                 ],
                 "produces": [
                     "application/json"
@@ -17,27 +64,68 @@
                 "summary": "Register a new user",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "register phone code",
-                        "name": "phone",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "register password",
-                        "name": "password",
-                        "in": "formData",
-                        "required": true
+                        "description": "register a new username and secret password",
+                        "name": "register",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/view.UserOperation"
+                        }
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "ok",
+                    "201": {
+                        "description": "Created",
                         "schema": {
-                            "type": "string"
+                            "type": "object",
+                            "$ref": "#/definitions/view.ResponseMSG"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/view.ResponseMSG"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/view.ResponseMSG"
                         }
                     }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "view.ResponseMSG": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "type": "object"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "view.UserOperation": {
+            "type": "object",
+            "properties": {
+                "passWord": {
+                    "type": "string"
+                },
+                "userName": {
+                    "type": "object"
                 }
             }
         }

@@ -1,29 +1,88 @@
+definitions:
+  view.ResponseMSG:
+    properties:
+      code:
+        type: integer
+      data:
+        type: object
+      message:
+        type: string
+      status:
+        type: integer
+    type: object
+  view.UserOperation:
+    properties:
+      passWord:
+        type: string
+      userName:
+        type: object
+    type: object
 info:
   contact: {}
   license: {}
 paths:
-  /api/v1/register:
+  /api/v1/login:
     post:
       consumes:
-      - application/x-www-form-urlencoded
-      description: register a new user and secret password
+      - application/json
+      description: User login and get a authorization token
       parameters:
-      - description: register phone code
-        in: formData
-        name: phone
+      - description: User login and get a authorization token
+        in: body
+        name: login
         required: true
-        type: integer
-      - description: register password
-        in: formData
-        name: password
-        required: true
-        type: string
+        schema:
+          $ref: '#/definitions/view.UserOperation'
+          type: object
       produces:
       - application/json
       responses:
-        "200":
-          description: ok
+        "201":
+          description: Created
           schema:
-            type: string
+            $ref: '#/definitions/view.ResponseMSG'
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/view.ResponseMSG'
+            type: object
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/view.ResponseMSG'
+            type: object
+      summary: User login and get a authorization token
+  /api/v1/register:
+    post:
+      consumes:
+      - application/json
+      description: register a new username and secret password
+      parameters:
+      - description: register a new username and secret password
+        in: body
+        name: register
+        required: true
+        schema:
+          $ref: '#/definitions/view.UserOperation'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/view.ResponseMSG'
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/view.ResponseMSG'
+            type: object
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/view.ResponseMSG'
+            type: object
       summary: Register a new user
 swagger: "2.0"
