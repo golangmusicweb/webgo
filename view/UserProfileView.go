@@ -8,7 +8,9 @@ import (
 	"strings"
 	"net/http"
 	"encoding/json"
-	"fmt"
+	"time"
+	"webgo/setting"
+	"strconv"
 )
 
 type UserOperation struct {
@@ -132,7 +134,6 @@ func RegisterView(c *gin.Context) {
 				}
 			}
 		} else {
-			fmt.Println("nima")
 			response.status = http.StatusBadRequest
 			response.message = "The param input error"
 		}
@@ -190,11 +191,9 @@ func LoginView(c *gin.Context) {
 			}
 		} else if isphone, _ := PhoneValidate(user.Phone); isphone == true {
 			if has, _ := orm.Where("phone=?", user.Phone).Get(user); has == false {
-				fmt.Println(has, user.Phone, user.Password)
 				response.status = http.StatusUnprocessableEntity
 				response.message = "The phone does not exists"
 			} else {
-				fmt.Println(user)
 				response.code = 0
 				response.status = http.StatusOK
 				response.message = "Login success"
@@ -208,13 +207,24 @@ func LoginView(c *gin.Context) {
 	if response.status == http.StatusOK {
 		// set token
 		newJWT := utils.NewJwt()
-		cliams := new(utils.CustomClaims)
-		if token, err := newJWT.GenerateToken(cliams); err == nil {
-			response.data = map[string]interface{}{"Authorization": token, "id": user.Id}
+		claims := new(utils.CustomClaims)
+		claims.Id = user.Id
+		claims.Username = login.UserName
+		claims.NotBefore = int64(time.Now().Unix() - 1000)// 签名生效时间
+		var config setting.Config
+		config.LoadConfig()
+		exp, _ := strconv.Atoi(config.Token["expired"])
+		claims.ExpiresAt = time.Now().Add(time.Duration(exp) * time.Minute).Unix()// 过期时间
+		claims.Issuer = "dongxiaoyi" //签名的发行者
+		if token, err := newJWT.GenerateToken(claims); err == nil {
+			cookie := http.Cookie{Name: "Authorization", Value: "JWT " + token, Path: "/", HttpOnly: true}
+			c.Request.AddCookie(&cookie)
+			response.data = map[string]interface{}{"Authorization": "JWT " + token, "id": user.Id}
 		} else {
 			response.code = -1
 			response.status = http.StatusBadRequest
 			response.message = "Generate token error"
+			response.data = map[string]interface{}{"Authorization": ""}
 		}
 	}
 	c.JSON(response.status, gin.H{
@@ -265,4 +275,27 @@ func DeleteAccountView(c *gin.Context) {
 		"code": response.code,
 		"msg": response.message,
 	})
+}
+
+
+// @Summary Delete user account
+// @Description Delete user account
+// @Produce  json
+// @Success 200 {object} view.ResponseMSG
+// @Success 400 {object} view.ResponseMSG
+// @Success 422 {object} view.ResponseMSG
+// @Router /api/test/getdatabytime [GET]
+func GetDataByTime(c *gin.Context) {
+	isPass := c.GetBool("isPass")
+	if !isPass {
+		return
+	}
+	claims := c.MustGet("claims").(*utils.CustomClaims)
+	if claims != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"status": 0,
+			"msg":    "token有效",
+			"data":   claims,
+		})
+	}
 }

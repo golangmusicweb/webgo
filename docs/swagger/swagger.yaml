@@ -26,6 +26,28 @@ info:
   contact: {}
   license: {}
 paths:
+  /api/test/getdatabytime:
+    get:
+      description: Delete user account
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/view.ResponseMSG'
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/view.ResponseMSG'
+            type: object
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/view.ResponseMSG'
+            type: object
+      summary: Delete user account
   /api/v1/user/delete:
     post:
       consumes:

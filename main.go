@@ -9,6 +9,7 @@ import (
 	"webgo/view"
 	"webgo/log"
 	"webgo/setting"
+	"webgo/middlewares"
 )
 
 func main() {
@@ -43,6 +44,12 @@ func main() {
 		v1.POST("user/register", view.RegisterView)
 		v1.POST("user/login", view.LoginView)
 		v1.POST("user/delete", view.DeleteAccountView)
+	}
+
+	test := r.Group("api/test")
+	test.Use(middlewares.JWTAuth())
+	{
+		test.GET("getdatabytime", view.GetDataByTime)
 	}
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

@@ -5,6 +5,38 @@
         "license": {}
     },
     "paths": {
+        "/api/test/getdatabytime": {
+            "get": {
+                "description": "Delete user account",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Delete user account",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/view.ResponseMSG"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/view.ResponseMSG"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/view.ResponseMSG"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/user/delete": {
             "post": {
                 "description": "Delete user account",

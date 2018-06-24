@@ -19,8 +19,7 @@ var (
 
 type CustomClaims struct {
 	Id int64
-	Username string
-	Phone int64
+	Username interface{}
 	jwt.StandardClaims
 }
 
@@ -42,15 +41,9 @@ func (j *Jwt) GenerateToken(claims *CustomClaims) (string, error) {
 
 // Parse token: parsing and validating
 func (j *Jwt) ParseToken(tokenString string) (interface{}, error){
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		// Don't forget to validate the alg is what you expect:
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
-		}
-
-		// hmacSampleSecret is a []byte containing your secret, e.g. []byte("my_secret_key")
+	token, err := jwt.ParseWithClaims(tokenString, &CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return j.SignKey, nil
-	})  // token with all of information
+	})
 	if err != nil {
 		if ve, ok := err.(*jwt.ValidationError); ok {
 			if ve.Errors&jwt.ValidationErrorMalformed != 0 {
@@ -65,8 +58,12 @@ func (j *Jwt) ParseToken(tokenString string) (interface{}, error){
 			}
 		}
 	}
-	claims := token.Claims.(*CustomClaims)
-	return claims, err
+	if claims, ok := token.Claims.(*CustomClaims); ok && token.Valid {
+		return claims, nil
+	}
+	fmt.Println(token.Claims)
+	fmt.Println(TokenInvalid)
+	return nil, TokenInvalid
 }
 
 // Refresh Token
