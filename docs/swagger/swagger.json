@@ -5,7 +5,54 @@
         "license": {}
     },
     "paths": {
-        "/api/v1/login": {
+        "/api/v1/user/delete": {
+            "post": {
+                "description": "Delete user account",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Delete user account",
+                "parameters": [
+                    {
+                        "description": "Delete user account",
+                        "name": "delete",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/view.DeleteAccount"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/view.ResponseMSG"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/view.ResponseMSG"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/view.ResponseMSG"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/user/login": {
             "post": {
                 "description": "User login and get a authorization token",
                 "consumes": [
@@ -52,7 +99,7 @@
                 }
             }
         },
-        "/api/v1/register": {
+        "/api/v1/user/register": {
             "post": {
                 "description": "register a new username and secret password",
                 "consumes": [
@@ -101,6 +148,14 @@
         }
     },
     "definitions": {
+        "view.DeleteAccount": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
         "view.ResponseMSG": {
             "type": "object",
             "properties": {

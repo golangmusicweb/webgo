@@ -1,4 +1,9 @@
 definitions:
+  view.DeleteAccount:
+    properties:
+      id:
+        type: integer
+    type: object
   view.ResponseMSG:
     properties:
       code:
@@ -21,7 +26,39 @@ info:
   contact: {}
   license: {}
 paths:
-  /api/v1/login:
+  /api/v1/user/delete:
+    post:
+      consumes:
+      - application/json
+      description: Delete user account
+      parameters:
+      - description: Delete user account
+        in: body
+        name: delete
+        required: true
+        schema:
+          $ref: '#/definitions/view.DeleteAccount'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            $ref: '#/definitions/view.ResponseMSG'
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/view.ResponseMSG'
+            type: object
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/view.ResponseMSG'
+            type: object
+      summary: Delete user account
+  /api/v1/user/login:
     post:
       consumes:
       - application/json
@@ -53,7 +90,7 @@ paths:
             $ref: '#/definitions/view.ResponseMSG'
             type: object
       summary: User login and get a authorization token
-  /api/v1/register:
+  /api/v1/user/register:
     post:
       consumes:
       - application/json

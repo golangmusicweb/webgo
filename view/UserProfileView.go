@@ -72,7 +72,7 @@ func PassSecret(passwork string) (string, string) {
 // @Success 201 {object} view.ResponseMSG
 // @Success 400 {object} view.ResponseMSG
 // @Success 422 {object} view.ResponseMSG
-// @Router /api/v1/register [POST]
+// @Router /api/v1/user/register [POST]
 func RegisterView(c *gin.Context) {
 	register := new(UserOperation)
 	user := new(entity.UserProfile)
@@ -158,7 +158,7 @@ var REGEX_MOBILE string = `^1[358]\d{9}$|^147\d{8}$|^176\d{8}$`
 // @Success 201 {object} view.ResponseMSG
 // @Success 400 {object} view.ResponseMSG
 // @Success 422 {object} view.ResponseMSG
-// @Router /api/v1/login [POST]
+// @Router /api/v1/user/login [POST]
 func LoginView(c *gin.Context) {
 	login := new(UserOperation)
 	user := new(entity.UserProfile)
@@ -200,7 +200,6 @@ func LoginView(c *gin.Context) {
 				response.message = "Login success"
 			}
 		} else {
-			fmt.Println(response)
 			response.status = http.StatusBadRequest
 			response.message = "The param input error"
 		}
@@ -211,12 +210,11 @@ func LoginView(c *gin.Context) {
 		newJWT := utils.NewJwt()
 		cliams := new(utils.CustomClaims)
 		if token, err := newJWT.GenerateToken(cliams); err == nil {
-			response.data = map[string]string{"Authorization": token}
+			response.data = map[string]interface{}{"Authorization": token, "id": user.Id}
 		} else {
 			response.code = -1
 			response.status = http.StatusBadRequest
 			response.message = "Generate token error"
-			response.data = map[string]string{"Authorization": ""}
 		}
 	}
 	c.JSON(response.status, gin.H{
@@ -224,5 +222,47 @@ func LoginView(c *gin.Context) {
 		"code": response.code,
 		"msg": response.message,
 		"data": response.data,
+	})
+}
+
+type DeleteAccount struct {
+	Id int64
+}
+
+// @Summary Delete user account
+// @Description Delete user account
+// @Accept  json
+// @Produce  json
+// @Param	delete	body	view.DeleteAccount	true "Delete user account"
+// @Success 204 {object} view.ResponseMSG
+// @Success 400 {object} view.ResponseMSG
+// @Success 422 {object} view.ResponseMSG
+// @Router /api/v1/user/delete [POST]
+func DeleteAccountView(c *gin.Context) {
+	response := new(ResponseMSG)
+	response.code = -1
+	orm := entity.GetDbEngine("default")
+	user := new(entity.UserProfile)
+	account := new(DeleteAccount)
+	body := c.Request.Body
+	err := json.NewDecoder(body).Decode(account)
+	if err == nil {
+		user.Id = account.Id
+		if _, err := orm.Id(user.Id).Delete(user); err == nil {
+			response.status = http.StatusNoContent
+			response.code = 0
+			response.message = "Account deleted successfully"
+		} else {
+			response.status = http.StatusUnprocessableEntity
+			response.message = "Account deletion failed"
+		}
+	} else {
+		response.status = http.StatusBadRequest
+		response.message = "The param input error"
+	}
+	c.JSON(response.status, gin.H{
+		"status": response.status,
+		"code": response.code,
+		"msg": response.message,
 	})
 }

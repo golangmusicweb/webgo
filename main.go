@@ -40,8 +40,9 @@ func main() {
 
 	v1 := r.Group("api/v1")
 	{
-		v1.POST("register", view.RegisterView)
-		v1.POST("login", view.LoginView)
+		v1.POST("user/register", view.RegisterView)
+		v1.POST("user/login", view.LoginView)
+		v1.POST("user/delete", view.DeleteAccountView)
 	}
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
