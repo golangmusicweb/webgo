@@ -5,12 +5,12 @@ import (
 	"webgo/entity"
 	"webgo/utils"
 	"crypto/sha1"
-	"strings"
 	"net/http"
 	"encoding/json"
 	"time"
 	"webgo/setting"
 	"strconv"
+	"webgo/validator"
 )
 
 type UserOperation struct {
@@ -35,27 +35,7 @@ func PassValidate(password string) (bool, string) {
 	return ispass, msg
 }
 
-func EmailValidate(email string) (bool, string) {
-	var isemail bool = true
-	var msg string
-	if index := strings.IndexAny(email, "@"); index == -1 {
-		isemail = false
-		msg = "Please enter the correct email addres"
-	}
-	return isemail, msg
-}
 
-func PhoneValidate(phone int64) (bool, string) {
-	var isphone bool = false
-	var msg string = "Please enter the correct phone code"
-
-		if phone > 10000000000 {
-			isphone = true
-			msg = ""
-		}
-
-	return isphone, msg
-}
 
 func PassSecret(passwork string) (string, string) {
 	pass := utils.NewHashKey(sha1.New, 64, 64, 15000)
@@ -93,7 +73,7 @@ func RegisterView(c *gin.Context) {
 		case float64:
 			user.Phone = int64(t)
 		}
-		if isemail, _ := EmailValidate(user.Email); isemail == true {
+		if isemail, _ := validator.EmailValidate(user.Email); isemail == true {
 			if has, err := orm.Where("email=?",user.Email).Get(user); has == true && err == nil {
 				response.status = http.StatusUnprocessableEntity
 				response.message = "The email does already registed"
@@ -113,7 +93,7 @@ func RegisterView(c *gin.Context) {
 					}
 				}
 			}
-		} else if isphone, _ := PhoneValidate(user.Phone); isphone == true {
+		} else if isphone, _ := validator.PhoneValidate(user.Phone); isphone == true {
 			if has, err := orm.Where("phone=?", user.Phone).Get(user); has == true && err == nil {
 				response.status = http.StatusUnprocessableEntity
 				response.message = "The phone does already registed"
@@ -156,7 +136,7 @@ var REGEX_MOBILE string = `^1[358]\d{9}$|^147\d{8}$|^176\d{8}$`
 // @Accept  json
 // @Produce  json
 // @Param	login	body	view.UserOperation	true "User login and get a authorization token"
-// @Success 201 {object} view.ResponseMSG
+// @Success 200 {object} view.ResponseMSG
 // @Success 400 {object} view.ResponseMSG
 // @Success 422 {object} view.ResponseMSG
 // @Router /api/v1/user/login [POST]
@@ -180,28 +160,27 @@ func LoginView(c *gin.Context) {
 		}
 
 
-		if isemail, _ := EmailValidate(user.Email); isemail == true {
+		if isemail, _ := validator.EmailValidate(user.Email); isemail == true {
 			if has, _ := orm.Where("email=?", user.Email).Get(user); has == false {
 				response.status = http.StatusUnprocessableEntity
 				response.message = "The email does not exists"
 			} else {
-				response.code = 0
 				response.status = http.StatusOK
-				response.message = "Login success"
 			}
-		} else if isphone, _ := PhoneValidate(user.Phone); isphone == true {
+		} else if isphone, _ := validator.PhoneValidate(user.Phone); isphone == true {
 			if has, _ := orm.Where("phone=?", user.Phone).Get(user); has == false {
 				response.status = http.StatusUnprocessableEntity
 				response.message = "The phone does not exists"
 			} else {
-				response.code = 0
 				response.status = http.StatusOK
-				response.message = "Login success"
 			}
 		} else {
 			response.status = http.StatusBadRequest
 			response.message = "The param input error"
 		}
+	} else {
+		response.status = http.StatusBadRequest
+		response.message = "The param input error"
 	}
 
 	if response.status == http.StatusOK {
@@ -217,21 +196,21 @@ func LoginView(c *gin.Context) {
 		claims.ExpiresAt = time.Now().Add(time.Duration(exp) * time.Minute).Unix()// 过期时间
 		claims.Issuer = "dongxiaoyi" //签名的发行者
 		if token, err := newJWT.GenerateToken(claims); err == nil {
-			cookie := http.Cookie{Name: "Authorization", Value: "JWT " + token, Path: "/", HttpOnly: true}
-			c.Request.AddCookie(&cookie)
-			response.data = map[string]interface{}{"Authorization": "JWT " + token, "id": user.Id}
+			cookie := http.Cookie{Name: "token", Value: "JWT " + token, Path: "/", HttpOnly: true}
+			http.SetCookie(c.Writer, &cookie)
+			response.code = 0
+			response.status = http.StatusOK
+			response.message = "Login success"
 		} else {
 			response.code = -1
 			response.status = http.StatusBadRequest
 			response.message = "Generate token error"
-			response.data = map[string]interface{}{"Authorization": ""}
 		}
 	}
 	c.JSON(response.status, gin.H{
 		"status": response.status,
 		"code": response.code,
 		"msg": response.message,
-		"data": response.data,
 	})
 }
 
