@@ -24,21 +24,6 @@ func main() {
 	var config setting.Config
 	config.LoadConfig()
 
-	// get orm engine
-
-	/*
-	user.Username = "dongxy"
-	user.Password = "sk927312*"
-	user.Email = "870428371@qq.com"
-	user.Address = "beijing"
-	birthday, _ := time.Parse("2006-01-02", "1992-03-13")
-	user.Birthday = birthday
-	user.CreatedAt, _ = time.Parse("2006-01-02 15:04:05", time.Now().Format("2006-01-02 15:04:05"))
-	fmt.Println(user)
-	affected, err := dbEngine.Insert(user)
-	fmt.Println(affected)
-	*/
-
 	r := gin.Default()
 
 	v1 := r.Group("api/v1")
