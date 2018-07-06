@@ -51,7 +51,7 @@ func main() {
 	test := r.Group("api/test")
 	test.Use(userprofile_m.JWTAuth()) //token auth
 
-	e := casbin.NewEnforcer("apps/userprofile/middlewares/authz_model.conf", "apps/userprofile/middlewares/authz_policy.csv")
+	e := casbin.NewEnforcer("webgo/apps/userprofile/middlewares/authz_model.conf", "webgo/apps/userprofile/middlewares/authz_policy.csv")
 	test.Use(authz.NewAuthorizer(e)) // role auth
 	{
 		test.GET("getdatabytime", userprofile_v.GetDataByTime)
