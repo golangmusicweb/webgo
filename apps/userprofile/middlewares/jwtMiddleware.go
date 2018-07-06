@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"webgo/log"
-	"webgo/utils"
+	"webgo/apps/userprofile/utils"
 	"strings"
 )
 

@@ -2,15 +2,15 @@ package view
 
 import (
 	"github.com/gin-gonic/gin"
-	"webgo/entity"
-	"webgo/utils"
+	"webgo/apps/userprofile/entity"
+	"webgo/apps/userprofile/utils"
 	"crypto/sha1"
 	"net/http"
 	"encoding/json"
 	"time"
 	"webgo/setting"
 	"strconv"
-	"webgo/validator"
+	"webgo/apps/userprofile/validator"
 )
 
 type UserOperation struct {
