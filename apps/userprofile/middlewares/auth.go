@@ -65,7 +65,11 @@ func NewAuthorizer(e *casbin.Enforcer) gin.HandlerFunc {
 		claims, _ := c.Get("claims")
 
 		if !a.CheckPermission(c.Request, claims) {
-			a.RequirePermission(c.Writer)
+			c.JSON(http.StatusOK, gin.H{
+				"status": -1,
+				"msg": "用户角色无权限访问",
+			})
+			return
 		}
 	}
 }
@@ -91,10 +95,4 @@ func (a *BasicAuthorizer) CheckPermission(r *http.Request, claims interface{}) b
 	method := r.Method
 	path := r.URL.Path
 	return a.enforcer.Enforce(role, path, method)
-}
-
-// RequirePermission returns the 403 Forbidden to the client
-func (a *BasicAuthorizer) RequirePermission(w http.ResponseWriter) {
-	w.WriteHeader(403)
-	w.Write([]byte("403 Forbidden\n"))
 }
