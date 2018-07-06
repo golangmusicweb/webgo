@@ -1,11 +1,13 @@
 package middlewares
 
 import (
-	"github.com/gin-gonic/gin"
-	"net/http"
 	"webgo/log"
 	"webgo/apps/userprofile/utils"
 	"strings"
+	"net/http"
+
+	"github.com/casbin/casbin"
+	"github.com/gin-gonic/gin"
 )
 
 func JWTAuth() gin.HandlerFunc {
@@ -54,4 +56,45 @@ func JWTAuth() gin.HandlerFunc {
 		c.Set("isPass", true)
 		c.Set("claims", claims)
 	}
+}
+
+// NewAuthorizer returns the authorizer, uses a Casbin enforcer as input
+func NewAuthorizer(e *casbin.Enforcer) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		a := &BasicAuthorizer{enforcer: e}
+		claims, _ := c.Get("claims")
+
+		if !a.CheckPermission(c.Request, claims) {
+			a.RequirePermission(c.Writer)
+		}
+	}
+}
+
+// BasicAuthorizer stores the casbin handler
+type BasicAuthorizer struct {
+	enforcer *casbin.Enforcer
+}
+
+
+// CheckPermission checks the user/method/path combination from the request.
+// Returns true (permission granted) or false (permission forbidden)
+func (a *BasicAuthorizer) CheckPermission(r *http.Request, claims interface{}) bool {
+	role := ""
+	if claims == nil {
+		return false
+	} else {
+		switch t := claims.(type) {
+		case utils.CustomClaims:
+			role = t.Role
+		}
+	}
+	method := r.Method
+	path := r.URL.Path
+	return a.enforcer.Enforce(role, path, method)
+}
+
+// RequirePermission returns the 403 Forbidden to the client
+func (a *BasicAuthorizer) RequirePermission(w http.ResponseWriter) {
+	w.WriteHeader(403)
+	w.Write([]byte("403 Forbidden\n"))
 }

@@ -9,6 +9,7 @@ type UserProfile struct {
 	Password string `xorm: "varchar(40) notnull" json: "passwd"`
 	Email string `xorm: "varchar(40) unique notnull" json: "email"`
 	Phone int64 `xorm: "bigint" json: "phone"`
+	Role string `xorm: "varchar(40) notnull" json: "role"`
 	Nickname string `xorm: "varchar(40)" json: "nickname"`
 	Birthday time.Time `xorm: "date" json: "birthday"`
 	Address string `xorm: "varchar(40)" json: "address"`

@@ -10,6 +10,8 @@ import (
 	"webgo/log"
 	"webgo/setting"
 	userprofile_m "webgo/apps/userprofile/middlewares"
+	"github.com/casbin/casbin"
+	"github.com/gin-contrib/authz"
 )
 
 func main() {
@@ -47,7 +49,10 @@ func main() {
 	}
 
 	test := r.Group("api/test")
-	test.Use(userprofile_m.JWTAuth())
+	test.Use(userprofile_m.JWTAuth()) //token auth
+
+	e := casbin.NewEnforcer("apps/userprofile/middlewares/authz_model.conf", "apps/userprofile/middlewares/authz_policy.csv")
+	test.Use(authz.NewAuthorizer(e)) // role auth
 	{
 		test.GET("getdatabytime", userprofile_v.GetDataByTime)
 	}

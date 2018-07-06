@@ -103,6 +103,7 @@ func RegisterView(c *gin.Context) {
 				} else {
 					cipherText, salt := PassSecret(register.PassWord)
 					user.Password = cipherText + salt
+					user.Role = "civilians"
 					if _, err := orm.Insert(user); err != nil {
 						response.status = http.StatusUnprocessableEntity
 						response.message = "Register failure"
@@ -189,6 +190,7 @@ func LoginView(c *gin.Context) {
 		claims := new(utils.CustomClaims)
 		claims.Id = user.Id
 		claims.Username = login.UserName
+		claims.Role = user.Role
 		claims.NotBefore = int64(time.Now().Unix() - 1000)// 签名生效时间
 		var config setting.Config
 		config.LoadConfig()

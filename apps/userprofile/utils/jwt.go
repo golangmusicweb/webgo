@@ -3,7 +3,6 @@ package utils
 import (
 	"github.com/dgrijalva/jwt-go"
 	"errors"
-	"fmt"
 	"time"
 	"strconv"
 	"webgo/setting"
@@ -20,6 +19,7 @@ var (
 type CustomClaims struct {
 	Id int64
 	Username interface{}
+	Role string
 	jwt.StandardClaims
 }
 
@@ -61,8 +61,6 @@ func (j *Jwt) ParseToken(tokenString string) (interface{}, error){
 	if claims, ok := token.Claims.(*CustomClaims); ok && token.Valid {
 		return claims, nil
 	}
-	fmt.Println(token.Claims)
-	fmt.Println(TokenInvalid)
 	return nil, TokenInvalid
 }
 
