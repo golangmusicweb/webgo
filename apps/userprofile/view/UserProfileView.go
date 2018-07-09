@@ -11,6 +11,7 @@ import (
 	"webgo/setting"
 	"strconv"
 	"webgo/apps/userprofile/validator"
+	"fmt"
 )
 
 type UserOperation struct {
@@ -162,17 +163,18 @@ func LoginView(c *gin.Context) {
 
 		cipherText, salt := PassSecret(login.PassWord)
 		user.Password = cipherText + salt
+		fmt.Println(user.Password)
 		if isemail, _ := validator.EmailValidate(user.Email); isemail == true {
 			if has, _ := orm.Where("email=?", user.Email).Get(user); has == false {
 				response.status = http.StatusUnprocessableEntity
-				response.message = "The email does not exists"
+				response.message = "The email does not exists or Incorrect password"
 			} else {
 				response.status = http.StatusOK
 			}
 		} else if isphone, _ := validator.PhoneValidate(user.Phone); isphone == true {
 			if has, _ := orm.Where("phone=?", user.Phone).Get(user); has == false {
 				response.status = http.StatusUnprocessableEntity
-				response.message = "The phone does not exists"
+				response.message = "The phone does not exists or Incorrect password"
 			} else {
 				response.status = http.StatusOK
 			}
