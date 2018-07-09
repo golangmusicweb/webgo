@@ -160,7 +160,8 @@ func LoginView(c *gin.Context) {
 			user.Phone = int64(t)
 		}
 
-
+		cipherText, salt := PassSecret(login.PassWord)
+		user.Password = cipherText + salt
 		if isemail, _ := validator.EmailValidate(user.Email); isemail == true {
 			if has, _ := orm.Where("email=?", user.Email).Get(user); has == false {
 				response.status = http.StatusUnprocessableEntity
