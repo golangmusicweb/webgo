@@ -197,8 +197,9 @@ func LoginView(c *gin.Context) {
 		exp, _ := strconv.Atoi(config.Token["expired"])
 		claims.ExpiresAt = time.Now().Add(time.Duration(exp) * time.Minute).Unix()// 过期时间
 		claims.Issuer = "dongxiaoyi" //签名的发行者
+		print(claims)
 		if token, err := newJWT.GenerateToken(claims); err == nil {
-			cookie := http.Cookie{Name: "token", Value: "JWT " + token, Path: "/", HttpOnly: true}
+			cookie := http.Cookie{Name: "Authorization", Value: "JWT " + token, Path: "/", HttpOnly: true}
 			http.SetCookie(c.Writer, &cookie)
 			response.code = 0
 			response.status = http.StatusOK

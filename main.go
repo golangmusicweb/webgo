@@ -10,8 +10,7 @@ import (
 	"webgo/log"
 	"webgo/setting"
 	userprofile_m "webgo/apps/userprofile/middlewares"
-	"github.com/casbin/casbin"
-	"github.com/gin-contrib/authz"
+	"github.com/gin-contrib/cors"
 )
 
 func main() {
@@ -34,16 +33,17 @@ func main() {
 	}
 
 	test := r.Group("api/test")
-	test.Use(userprofile_m.JWTAuth()) //token auth
+	r.Use(userprofile_m.JWTAuth()) //token auth
 
-	e := casbin.NewEnforcer("webgo/apps/userprofile/middlewares/authz_model.conf", "webgo/apps/userprofile/middlewares/authz_policy.csv")
-	test.Use(authz.NewAuthorizer(e)) // role auth
+	//e := casbin.NewEnforcer("webgo/apps/userprofile/middlewares/authz_model.conf", "webgo/apps/userprofile/middlewares/authz_policy.csv")
+	//test.Use(authz.NewAuthorizer(e)) // role auth
+	test.Use(cors.Default())
 	{
 		test.GET("getdatabytime", userprofile_v.GetDataByTime)
 	}
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	r.Run(":8080")
+	r.Run(":80")
 }
 
 
