@@ -11,6 +11,7 @@ import (
 	"webgo/setting"
 	userprofile_m "webgo/apps/userprofile/middlewares"
 	"github.com/gin-contrib/cors"
+	"time"
 )
 
 func main() {
@@ -24,6 +25,13 @@ func main() {
 	config.LoadConfig()
 
 	r := gin.Default()
+	r.Use(cors.New(cors.Config{
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"},
+		AllowHeaders:      []string{"Origin", "Content-Length", "Content-Type", "Authorization"},
+		AllowCredentials: true,
+		AllowAllOrigins: true,
+		MaxAge: 12 * time.Hour,
+	}))
 
 	v1 := r.Group("api/v1")
 	{
@@ -33,11 +41,10 @@ func main() {
 	}
 
 	test := r.Group("api/test")
-	r.Use(userprofile_m.JWTAuth()) //token auth
-
+	//v1.Use(userprofile_m.JWTAuth()) //token auth
+	test.Use(userprofile_m.JWTAuth())
 	//e := casbin.NewEnforcer("webgo/apps/userprofile/middlewares/authz_model.conf", "webgo/apps/userprofile/middlewares/authz_policy.csv")
 	//test.Use(authz.NewAuthorizer(e)) // role auth
-	test.Use(cors.Default())
 	{
 		test.GET("getdatabytime", userprofile_v.GetDataByTime)
 	}

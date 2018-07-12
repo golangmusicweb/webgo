@@ -1,6 +1,10 @@
 package validator
 
-import "strings"
+import (
+	"strings"
+	"webgo/apps/userprofile/utils"
+	"crypto/sha1"
+)
 
 func EmailValidate(email string) (bool, string) {
 	var isemail bool = true
@@ -22,4 +26,10 @@ func PhoneValidate(phone int64) (bool, string) {
 	}
 
 	return isphone, msg
+}
+
+func PasswordValidate(password, cipherText, salt string)  bool {
+	pass := utils.NewHashKey(sha1.New, 64, 64, 15000)
+	isPass := pass.VerifyPassword(password, cipherText, salt)
+	return isPass
 }

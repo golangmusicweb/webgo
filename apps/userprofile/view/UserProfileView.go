@@ -1,6 +1,7 @@
 package view
 
 import (
+	"strings"
 	"github.com/gin-gonic/gin"
 	"webgo/apps/userprofile/entity"
 	"webgo/apps/userprofile/utils"
@@ -11,7 +12,6 @@ import (
 	"webgo/setting"
 	"strconv"
 	"webgo/apps/userprofile/validator"
-	"fmt"
 )
 
 type UserOperation struct {
@@ -161,20 +161,19 @@ func LoginView(c *gin.Context) {
 			user.Phone = int64(t)
 		}
 
-		cipherText, salt := PassSecret(login.PassWord)
-		user.Password = cipherText + salt
-		fmt.Println(user.Password)
+		//user.Password = cipherText + salt
+		//fmt.Println(user.Password)
 		if isemail, _ := validator.EmailValidate(user.Email); isemail == true {
 			if has, _ := orm.Where("email=?", user.Email).Get(user); has == false {
 				response.status = http.StatusUnprocessableEntity
-				response.message = "The email does not exists or Incorrect password"
+				response.message = "The email does not exists"
 			} else {
 				response.status = http.StatusOK
 			}
 		} else if isphone, _ := validator.PhoneValidate(user.Phone); isphone == true {
 			if has, _ := orm.Where("phone=?", user.Phone).Get(user); has == false {
 				response.status = http.StatusUnprocessableEntity
-				response.message = "The phone does not exists or Incorrect password"
+				response.message = "The phone does not exists"
 			} else {
 				response.status = http.StatusOK
 			}
@@ -185,6 +184,16 @@ func LoginView(c *gin.Context) {
 	} else {
 		response.status = http.StatusBadRequest
 		response.message = "The param input error"
+	}
+
+	if response.status == http.StatusOK { 
+		hashPass := user.Password
+		cipherText := strings.Split(hashPass, "==")[0] + "=="
+		salt := strings.Split(hashPass, "==")[1] + "=="
+		if isPass := validator.PasswordValidate(login.PassWord, cipherText, salt); isPass == false {
+			response.status = http.StatusUnprocessableEntity
+			response.message = "Incorrect password"
+		}
 	}
 
 	if response.status == http.StatusOK {
@@ -200,7 +209,6 @@ func LoginView(c *gin.Context) {
 		exp, _ := strconv.Atoi(config.Token["expired"])
 		claims.ExpiresAt = time.Now().Add(time.Duration(exp) * time.Minute).Unix()// 过期时间
 		claims.Issuer = "dongxiaoyi" //签名的发行者
-		print(claims)
 		if token, err := newJWT.GenerateToken(claims); err == nil {
 			cookie := http.Cookie{Name: "Authorization", Value: "JWT " + token, Path: "/", HttpOnly: true}
 			http.SetCookie(c.Writer, &cookie)
