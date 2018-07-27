@@ -228,10 +228,19 @@ func LoginView(c *gin.Context) {
 	})
 }
 
-func Logout(c *gin.Context) {
+
+// @Summary  User logout
+// @Description User logout
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} view.ResponseMSG
+// @Success 400 {object} view.ResponseMSG
+// @Router /api/v1/user/logout [POST]
+func LogoutView(c *gin.Context) {
 	response := new(ResponseMSG)
 	token, err := c.Request.Cookie("Authorization")
-	if err != nil {
+
+	if err == nil {
 		m, _ := time.ParseDuration("-1s")
 		token.Expires = time.Now().Add(m)
 		http.SetCookie(c.Writer, token)

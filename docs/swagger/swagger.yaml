@@ -112,6 +112,25 @@ paths:
             $ref: '#/definitions/view.ResponseMSG'
             type: object
       summary: User login and get a authorization token
+  /api/v1/user/logout:
+    post:
+      consumes:
+      - application/json
+      description: User logout
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/view.ResponseMSG'
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/view.ResponseMSG'
+            type: object
+      summary: User logout
   /api/v1/user/register:
     post:
       consumes:

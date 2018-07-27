@@ -37,6 +37,7 @@ func main() {
 	{
 		v1.POST("user/register", userprofile_v.RegisterView)
 		v1.POST("user/login", userprofile_v.LoginView)
+		v1.POST("user/logout", userprofile_v.LogoutView)
 		v1.POST("user/delete", userprofile_v.DeleteAccountView)
 	}
 
