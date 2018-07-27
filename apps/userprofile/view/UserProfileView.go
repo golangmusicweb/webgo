@@ -228,6 +228,29 @@ func LoginView(c *gin.Context) {
 	})
 }
 
+func Logout(c *gin.Context) {
+	response := new(ResponseMSG)
+	token, err := c.Request.Cookie("Authorization")
+	if err != nil {
+		m, _ := time.ParseDuration("-1s")
+		token.Expires = time.Now().Add(m)
+		http.SetCookie(c.Writer, token)
+		response.code = 0
+		response.status = http.StatusOK
+		response.message = "Logout success"
+	} else {
+		response.code = -1
+		response.status = http.StatusBadRequest
+		response.message = "You are not logged in"
+	}
+	c.JSON(response.status, gin.H{
+		"status": response.status,
+		"code": response.code,
+		"msg": response.message,
+	})
+
+}
+
 type DeleteAccount struct {
 	Id int64
 }
