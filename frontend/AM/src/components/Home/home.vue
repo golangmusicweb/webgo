@@ -1,5 +1,7 @@
 <template>
-<div>{{ data }}</div>
+<div>
+  <router-link ></router-link>
+</div>
 </template>
 
 <script>

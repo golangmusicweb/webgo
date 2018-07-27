@@ -15,17 +15,16 @@ func JWTAuth() gin.HandlerFunc {
 	logger.GetLogger()
 	defer logger.Close()
 	return func(c *gin.Context) {
-		token := c.Request.Header.Get("Authorization")
-		if token == "" {
+		tokenCookie, err := c.Request.Cookie("Authorization")
+		token := tokenCookie.Value
+		if err != nil {
 			c.JSON(http.StatusOK, gin.H{
 				"status": -1,
 				"msg": "请求未携带token，无权限访问",
 			})
 			c.Set("isPass", false)
 			return
-		}
-		logger.Trace("get token: ", token)
-
+		} 
 		j := utils.NewJwt()
 		claims, err := j.ParseToken(strings.Split(token, " ")[1])
 		if err != nil {
