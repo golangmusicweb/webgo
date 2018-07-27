@@ -1,7 +1,6 @@
 package middlewares
 
 import (
-	"fmt"
 	"webgo/log"
 	"webgo/apps/userprofile/utils"
 	"strings"
