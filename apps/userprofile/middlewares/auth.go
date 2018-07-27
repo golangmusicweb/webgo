@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"fmt"
 	"webgo/log"
 	"webgo/apps/userprofile/utils"
 	"strings"
@@ -16,7 +17,8 @@ func JWTAuth() gin.HandlerFunc {
 	defer logger.Close()
 	return func(c *gin.Context) {
 		tokenCookie, err := c.Request.Cookie("Authorization")
-		token := tokenCookie.Value
+		token := strings.Split(string(tokenCookie.Value), " ")[1]
+		fmt.Println(token)
 		if err != nil {
 			c.JSON(http.StatusOK, gin.H{
 				"status": -1,
@@ -44,7 +46,7 @@ func JWTAuth() gin.HandlerFunc {
 			return
 		}
 		newJWT := utils.NewJwt()
-		newtoken, _ := newJWT.RefreshToken(strings.Split(token, " ")[1])
+		newtoken, _ := newJWT.RefreshToken(token)
 		cookie := &http.Cookie{
 			Name: "Authorization",
 			Value: "JWT" + newtoken,
