@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"fmt"
 	"webgo/log"
 	"webgo/apps/userprofile/utils"
 	"strings"
@@ -26,7 +27,7 @@ func JWTAuth() gin.HandlerFunc {
 			return
 		} 
 		j := utils.NewJwt()
-		claims, err := j.ParseToken(strings.Split(token, " ")[1])
+		claims, err := j.ParseToken(token)
 		if err != nil {
 			if err == utils.TokenExpired {
 				c.JSON(http.StatusOK, gin.H{
