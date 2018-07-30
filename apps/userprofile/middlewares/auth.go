@@ -1,7 +1,6 @@
 package middlewares
 
 import (
-        "fmt"
 	"webgo/log"
 	"webgo/apps/userprofile/utils"
 	"strings"
@@ -22,10 +21,10 @@ func JWTAuth() gin.HandlerFunc {
 				"status": -1,
 				"msg": "请求未携带token，无权限访问",
 			})
+			
 			c.Set("isPass", false)
 			return
 		} 
-                fmt.Println(tokenCookie.Value)
 		token := strings.Split(string(tokenCookie.Value), " ")[1]
 		j := utils.NewJwt()
 		claims, err := j.ParseToken(token)

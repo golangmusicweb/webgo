@@ -12,6 +12,10 @@ import (
 	userprofile_m "webgo/apps/userprofile/middlewares"
 	"github.com/gin-contrib/cors"
 	"time"
+	"github.com/casbin/casbin"
+	"github.com/casbin/xorm-adapter"
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/gin-contrib/authz"
 )
 
 func main() {
@@ -44,8 +48,12 @@ func main() {
 	test := r.Group("api/test")
 	//v1.Use(userprofile_m.JWTAuth()) //token auth
 	test.Use(userprofile_m.JWTAuth())
+	a := xormadapter.NewAdapter("mysql", "root:sk927312*@tcp(127.0.0.1:3306)/")
+	e := casbin.NewEnforcer("webgo/apps/userprofile/middlewares/authz_model.conf", a)
+	e.LoadPolicy()
+	e.SavePolicy()
 	//e := casbin.NewEnforcer("webgo/apps/userprofile/middlewares/authz_model.conf", "webgo/apps/userprofile/middlewares/authz_policy.csv")
-	//test.Use(authz.NewAuthorizer(e)) // role auth
+	test.Use(authz.NewAuthorizer(e)) // role auth
 	{
 		test.GET("getdatabytime", userprofile_v.GetDataByTime)
 	}

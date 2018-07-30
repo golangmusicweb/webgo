@@ -241,11 +241,10 @@ func LogoutView(c *gin.Context) {
 	token, err := c.Request.Cookie("Authorization")
 
 	if err == nil {
-                m := time.Duration(-1)
+		m := time.Duration(-1)
 		token.Expires = time.Now().Add(m)
-		token.MaxAge = 0 
-                token.HttpOnly = true
-                token.Path = "/"
+		token.MaxAge = -1
+		token.HttpOnly = true
 		http.SetCookie(c.Writer, token)
 		response.code = 0
 		response.status = http.StatusOK
